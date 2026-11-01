@@ -1,7 +1,7 @@
 //! `my-satellite run`: this device as a satellite of a Nestor server.
 //!
-//!     my-satellite run --room salon --pairing-uri "nestor+http://nestor.local:7860/?code=K7QF2M9X"
-//!     my-satellite run --core http://nestor.local:7860 --room salon
+//!     my-satellite run --room salon --pairing-uri "nestor+http://nestor.local:8471/?code=K7QF2M9X"
+//!     my-satellite run --core http://nestor.local:8471 --room salon
 //!
 //! The first run pairs: with the pairing URI or enrollment code it is given (flags, or
 //! `NESTOR_PAIRING_URI` / `NESTOR_PAIRING_CODE`), else it says a device code on its speaker and logs
@@ -43,7 +43,7 @@ enum Command {
 
 #[derive(clap::Args)]
 struct Run {
-    /// The server's voice address, e.g. http://nestor.local:7860 (default: the pairing URI's).
+    /// The server's voice address, e.g. http://nestor.local:8471 (default: the pairing URI's).
     #[arg(long, env = "NESTOR_CORE")]
     core: Option<String>,
     /// Pair with this pairing URI, made in Nestor: nestor+http://host:port/?code=K7QF2M9X.
@@ -180,7 +180,7 @@ mod tests {
                 "salon",
                 "--null-audio",
                 "--pairing-uri",
-                "nestor+http://nestor.local:7860/?code=K7QF2M9X",
+                "nestor+http://nestor.local:8471/?code=K7QF2M9X",
             ]),
             Language::En,
         );
@@ -189,7 +189,7 @@ mod tests {
 
     #[test]
     fn it_declares_the_light_under_its_model() {
-        let args = ["--core", "http://nestor.local:7860", "--room", "salon", "--id", "enceinte", "--null-audio"];
+        let args = ["--core", "http://nestor.local:8471", "--room", "salon", "--id", "enceinte", "--null-audio"];
         let satellite = satellite(run(&args), Language::En).unwrap();
         let manifest = satellite.manifest();
         assert_eq!(manifest.device().id(), "enceinte");

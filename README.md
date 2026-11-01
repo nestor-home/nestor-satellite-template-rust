@@ -49,14 +49,14 @@ nestor satellites add --room salon --name "Living room speaker"
 It prints a pairing URI. On the device:
 
 ```bash
-cargo run -- run --room salon --pairing-uri 'nestor+http://nestor.local:7860/?code=K7QF2M9X'
+cargo run -- run --room salon --pairing-uri 'nestor+http://nestor.local:8471/?code=K7QF2M9X'
 ```
 
 The first run pairs, then keeps its token in `~/.config/my-satellite/<id>.json`; later runs only
 need the server's address:
 
 ```bash
-cargo run -- run --core http://nestor.local:7860 --room salon
+cargo run -- run --core http://nestor.local:8471 --room salon
 ```
 
 Run like this without a pairing URI, an unpaired device says a 6-digit code on its speaker and logs
