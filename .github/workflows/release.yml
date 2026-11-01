@@ -1,0 +1,54 @@
+# Release pull request on every push to main, from the Conventional Commits since the last release.
+# Merging it tags vX.Y.Z and creates the GitHub Release.
+#
+# In your own repository (see the README, "Release"):
+# 1. Replace the `release` job with the commented one under it: the first runs nestor-home's shared
+#    workflow, which acts as that organization's GitHub App, so it only runs in nestor-home.
+# 2. To publish on crates.io, register a trusted publisher, then uncomment the `crates-io` job.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    if: github.repository_owner == 'nestor-home'
+    uses: nestor-home/.github/.github/workflows/release-please.yml@main
+    secrets: inherit
+
+  # release:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     release_created: ${{ steps.release.outputs.release_created }}
+  #     tag_name: ${{ steps.release.outputs.tag_name }}
+  #   steps:
+  #     - id: release
+  #       uses: googleapis/release-please-action@v5
+  #       with:
+  #         config-file: release-please-config.json
+  #         manifest-file: .release-please-manifest.json
+
+  # crates-io:
+  #   needs: release
+  #   if: needs.release.outputs.release_created == 'true'
+  #   runs-on: ubuntu-latest
+  #   environment: crates-io
+  #   permissions:
+  #     contents: read
+  #     id-token: write
+  #   steps:
+  #     - uses: actions/checkout@v7
+  #       with:
+  #         ref: ${{ needs.release.outputs.tag_name }}
+  #     - uses: dtolnay/rust-toolchain@stable
+  #     - run: sudo apt-get update && sudo apt-get install -y libasound2-dev pkg-config
+  #     - id: auth
+  #       uses: rust-lang/crates-io-auth-action@v1
+  #     - run: cargo publish
+  #       env:
+  #         CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
