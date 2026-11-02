@@ -20,6 +20,8 @@ jobs:
     if: github.repository_owner == 'nestor-home'
     uses: nestor-home/.github/.github/workflows/release-please.yml@main
     secrets: inherit
+    with:
+      automerge: true  # publish as soon as a release is ready: dependencies follow on their own
 
   # release:
   #   runs-on: ubuntu-latest
