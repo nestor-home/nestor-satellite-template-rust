@@ -2,8 +2,8 @@
 
 A working [Nestor](https://nestorhome.dev) satellite to start your own device from: a microphone,
 a speaker and a status light, on the [`nestor-satellite`](https://crates.io/crates/nestor-satellite)
-crate. It pairs with a Nestor server, streams audio both ways, shows the assistant's attitude and
-blinks when a person looks for it. Its CI runs the server's conformance suite on every change.
+crate. It pairs with a Nestor server, holds one WebSocket link to it, streams audio both ways over
+WebRTC, prints the assistant's words, shows its attitude and blinks when a person looks for it. Its CI runs the server's conformance suite on every change.
 
 The light is printed: replace it with your hardware, and keep the rest.
 
@@ -69,12 +69,15 @@ the `my-satellite` command.
 
 Look for `TODO(hardware)`:
 
-- `src/light.rs`: the body. `behavior` (idle, listening, thinking, speaking) and `identify` print;
-  drive your LEDs, screen or motors there. Calls must return at once: keep the state and animate
-  from a task of your own.
+- `src/light.rs`: the body. `behavior` (idle, listening, thinking, speaking), `identify` and `show`
+  (the assistant's words) print; drive your LEDs, screen or motors there. Calls must return at
+  once: keep the state and animate from a task of your own.
 - `src/main.rs`, `satellite()`: the default microphone and speaker. Pick others with
   `Microphone::named` and `Speaker::named`, or implement `AudioSource` / `AudioSink`.
-- `src/main.rs`, `satellite()`: the manifest. Declare only what the device has.
+- `src/main.rs`, `satellite()`: the manifest and the builder. Declare only what the body and
+  sensors have; audio and text follow from what the builder is given: `source` (`audio.capture`),
+  `sink` (`audio.playback`), `text_display` (`text.display`) and `text_input` (`text.input`, then
+  `satellite.observer().input_text(…)`). Without a screen, drop `text_display`.
 
 | Capability                                     | Body method or SDK call                                   |
 | ---------------------------------------------- | --------------------------------------------------------- |
@@ -100,7 +103,7 @@ cargo test
 [conformance suite](https://nestorhome.dev/docs/satellites/conformance/), run through uvx
 ([uv](https://docs.astral.sh/uv/) must be installed, else the test is skipped) at the version in
 `.nestor-version`: it launches `my-satellite run --null-audio` once per scenario and checks
-pairing, refused codes, identify, acks, audio and reconnection. CI runs both on every pull request.
+pairing, refused codes, identify, acks, text, audio and reconnection. CI runs both on every pull request.
 
 ## Release
 

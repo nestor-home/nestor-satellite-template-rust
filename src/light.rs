@@ -29,3 +29,9 @@ impl Body for Light {
         println!("light: {}", if up { "connected" } else { "disconnected" });
     }
 }
+
+/// The assistant's words, one message each (`last` on the last of a turn).
+pub fn show(text: &str, _last: bool) {
+    // TODO(hardware): show them on a screen.
+    println!("nestor: {text}");
+}
