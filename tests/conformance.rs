@@ -2,8 +2,8 @@
 //!
 //! The published server's `nestor satellites conformance`, run through uvx at the version in
 //! `.nestor-version`, launches `my-satellite run --null-audio` once per scenario: pairing with a
-//! device code and an enrollment code, refused codes, rate limits, identify, acks, audio both ways
-//! and reconnection. Raise `.nestor-version` to check against a newer server.
+//! device code and an enrollment code, refused codes, rate limits, identify, acks, text, audio both
+//! ways and reconnection. Raise `.nestor-version` to check against a newer server.
 //!
 //! Skipped when `uvx` is not on the PATH, unless `NESTOR_CONFORMANCE=required` (CI).
 #![allow(clippy::unwrap_used)] // test helpers fail loudly
@@ -38,9 +38,10 @@ fn the_satellite_passes_the_servers_conformance_suite() {
     assert!(output.status.success(), "{report}\n{}", String::from_utf8_lossy(&output.stderr));
     assert!(!report.lines().any(|line| line.starts_with("FAIL")), "{report}");
     for check in [
-        "PASS  receives the core's audio (W3)",
-        "PASS  sends its microphone audio (W3)",
-        "PASS  reconnects with the same token after a hang-up (W4)",
+        "PASS  receives the core's audio (A1, A2)",
+        "PASS  sends its microphone audio (A1, A2)",
+        "PASS  acknowledges intent.text within 1 s",
+        "PASS  reconnects with the same token after the core closes its link (L5)",
         "PASS  pairs with the enrollment code of NESTOR_PAIRING_URI, no code typed (P3, P4)",
         "PASS  presents a refused enrollment code (used) only once (P5)",
         "PASS  keeps polling after a pending identify (I1)",

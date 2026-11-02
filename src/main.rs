@@ -16,8 +16,7 @@ use std::process::ExitCode;
 use clap::{Parser, Subcommand};
 use nestor_satellite::devices::{Microphone, Speaker};
 use nestor_satellite::{
-    AUDIO_CAPTURE, AUDIO_PLAYBACK, Device, Enrollment, EnrollmentCode, IDENTIFY, Language, Manifest, PairingUri,
-    Satellite, SilenceSource, TokenStore,
+    Device, Enrollment, EnrollmentCode, IDENTIFY, Language, Manifest, PairingUri, Satellite, TokenStore,
 };
 use tracing_subscriber::EnvFilter;
 
@@ -90,8 +89,9 @@ fn satellite(run: Run, language: Language) -> Result<Satellite, String> {
     let id = run.id.unwrap_or_else(default_id);
     let device = Device::new(&id, MODEL, run.room).map_err(|e| e.to_string())?;
     // IDENTIFY is the optional capability this example shows (Light::identify): declare only what
-    // the device really has. A microphone and a speaker are the minimum.
-    let manifest = Manifest::new(device, [AUDIO_CAPTURE, AUDIO_PLAYBACK, IDENTIFY]).map_err(|e| e.to_string())?;
+    // the device really has. Audio and text follow from what the builder is given: the microphone
+    // (`source`), the speaker (`sink`) and `text_display` for the assistant's words.
+    let manifest = Manifest::new(device, [IDENTIFY]).map_err(|e| e.to_string())?;
     let tokens = TokenStore::new(run.token_file.unwrap_or_else(|| format!("~/.config/{NAME}/{id}.json").into()));
     let enrollment: Option<Enrollment> = run.pairing_uri.map(Into::into).or(run.pairing_code.map(Into::into));
     let core = match (run.core, enrollment.as_ref().and_then(Enrollment::core)) {
@@ -99,12 +99,14 @@ fn satellite(run: Run, language: Language) -> Result<Satellite, String> {
         (None, Some(core)) => core.to_owned(),
         (None, None) => return Err("give the server's address (--core, NESTOR_CORE) or a pairing URI".to_owned()),
     };
-    let mut builder = Satellite::builder(core, manifest, tokens).body(Light).language(language);
+    // Without a screen, drop `text_display`: the device then only speaks.
+    let mut builder =
+        Satellite::builder(core, manifest, tokens).body(Light).text_display(light::show).language(language);
     if let Some(enrollment) = enrollment {
         builder = builder.enrollment(enrollment);
     }
     let built = if run.null_audio {
-        builder.source(SilenceSource::new()).build() // the core's voice is decoded and dropped
+        builder.null_audio().build() // silence is sent, the core's voice is decoded and dropped
     } else {
         // TODO(hardware): the system's default microphone and speaker, through cpal. Pick others
         // with Microphone::named / Speaker::named, or implement AudioSource / AudioSink.
@@ -165,6 +167,8 @@ fn fail(error: &dyn std::fmt::Display) -> ExitCode {
 
 #[cfg(test)]
 mod tests {
+    use nestor_satellite::{AUDIO_CAPTURE, AUDIO_PLAYBACK, TEXT_DISPLAY};
+
     use super::*;
 
     fn run(args: &[&str]) -> Run {
@@ -194,7 +198,9 @@ mod tests {
         let manifest = satellite.manifest();
         assert_eq!(manifest.device().id(), "enceinte");
         assert_eq!(manifest.device().model(), MODEL);
-        assert!(manifest.capabilities().iter().any(|c| c.name() == IDENTIFY));
+        for capability in [IDENTIFY, AUDIO_CAPTURE, AUDIO_PLAYBACK, TEXT_DISPLAY] {
+            assert!(manifest.capabilities().iter().any(|c| c.name() == capability), "{capability}");
+        }
     }
 
     #[test]
