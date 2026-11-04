@@ -28,13 +28,13 @@ Everything to rename is spelled `my-satellite`:
 grep -rn --exclude-dir=target my-satellite .
 ```
 
-| What                  | Where                                                                  |
-| --------------------- | ---------------------------------------------------------------------- |
-| Crate name, authors   | `Cargo.toml` (`name`, `authors`, `description`): the binary's name too |
-| Model id              | `MODEL` in `src/main.rs`: what your device is, as a slug               |
-| Token folder, command | `NAME` in `src/main.rs`                                                |
-| Conformance test      | `CARGO_BIN_EXE_my-satellite` in `tests/conformance.rs`                 |
-| Release               | `package-name` in `release-please-config.json`                         |
+| What                  | Where                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| Crate name, authors   | `Cargo.toml` (`name`, `authors`, `description`): the binary's name and the software it declares |
+| Model id              | `MODEL` in `src/main.rs`: what your device is, as a slug                                    |
+| Token folder, command | `NAME` in `src/main.rs`                                                                     |
+| Tests                 | `CARGO_BIN_EXE_my-satellite` in `tests/conformance.rs`, the software name in `src/main.rs`  |
+| Release               | `package-name` in `release-please-config.json`                                              |
 
 Then `cargo build` (it updates `Cargo.lock`) and run the tests.
 
@@ -74,7 +74,8 @@ Look for `TODO(hardware)`:
   once: keep the state and animate from a task of your own.
 - `src/main.rs`, `satellite()`: the default microphone and speaker. Pick others with
   `Microphone::named` and `Speaker::named`, or implement `AudioSource` / `AudioSink`.
-- `src/main.rs`, `satellite()`: the manifest and the builder. Declare only what the body and
+- `src/main.rs`, `satellite()`: the manifest and the builder. The manifest names the software the
+  device runs (this crate's name and version, shown in Nestor). Declare only what the body and
   sensors have; audio and text follow from what the builder is given: `source` (`audio.capture`),
   `sink` (`audio.playback`), `text_display` (`text.display`) and `text_input` (`text.input`, then
   `satellite.observer().input_text(…)`). Without a screen, drop `text_display`.

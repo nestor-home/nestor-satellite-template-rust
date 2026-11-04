@@ -16,7 +16,7 @@ use std::process::ExitCode;
 use clap::{Parser, Subcommand};
 use nestor_satellite::devices::{Microphone, Speaker};
 use nestor_satellite::{
-    Device, Enrollment, EnrollmentCode, IDENTIFY, Language, Manifest, PairingUri, Satellite, TokenStore,
+    Device, Enrollment, EnrollmentCode, IDENTIFY, Language, Manifest, PairingUri, Satellite, Software, TokenStore,
 };
 use tracing_subscriber::EnvFilter;
 
@@ -91,7 +91,9 @@ fn satellite(run: Run, language: Language) -> Result<Satellite, String> {
     // IDENTIFY is the optional capability this example shows (Light::identify): declare only what
     // the device really has. Audio and text follow from what the builder is given: the microphone
     // (`source`), the speaker (`sink`) and `text_display` for the assistant's words.
-    let manifest = Manifest::new(device, [IDENTIFY]).map_err(|e| e.to_string())?;
+    // The software is this crate, named as it is installed: Nestor shows it and tells about updates.
+    let software = Software::new(env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION")).map_err(|e| e.to_string())?;
+    let manifest = Manifest::new(device, [IDENTIFY]).map_err(|e| e.to_string())?.with_software(software);
     let tokens = TokenStore::new(run.token_file.unwrap_or_else(|| format!("~/.config/{NAME}/{id}.json").into()));
     let enrollment: Option<Enrollment> = run.pairing_uri.map(Into::into).or(run.pairing_code.map(Into::into));
     let core = match (run.core, enrollment.as_ref().and_then(Enrollment::core)) {
@@ -198,6 +200,8 @@ mod tests {
         let manifest = satellite.manifest();
         assert_eq!(manifest.device().id(), "enceinte");
         assert_eq!(manifest.device().model(), MODEL);
+        assert_eq!(manifest.software().name(), "my-satellite");
+        assert_eq!(manifest.software().version(), env!("CARGO_PKG_VERSION"));
         for capability in [IDENTIFY, AUDIO_CAPTURE, AUDIO_PLAYBACK, TEXT_DISPLAY] {
             assert!(manifest.capabilities().iter().any(|c| c.name() == capability), "{capability}");
         }
