@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/nestor-home/nestor-satellite-template-rust/compare/v0.2.0...v0.2.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* **deps:** update rust crate nestor-satellite to 0.7 ([#21](https://github.com/nestor-home/nestor-satellite-template-rust/issues/21)) ([905ca13](https://github.com/nestor-home/nestor-satellite-template-rust/commit/905ca133929626ab5aeaee998b2387eebdeb3010))
+
 ## [0.2.0](https://github.com/nestor-home/nestor-satellite-template-rust/compare/v0.1.1...v0.2.0) (2026-11-04)
 
 
