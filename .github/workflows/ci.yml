@@ -16,6 +16,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 4
     steps:
       - uses: actions/checkout@v7
       # ALSA for cpal (the microphone and the speaker); libopus is built from source with cmake (preinstalled).
@@ -32,6 +33,7 @@ jobs:
     # The published server's black-box suite (`nestor satellites conformance`, version in
     # .nestor-version) against `my-satellite run`, without a sound card.
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.3.3
@@ -47,6 +49,7 @@ jobs:
     needs: [check, conformance]
     if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         run: exit 1
