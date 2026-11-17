@@ -1452,11 +1452,12 @@ dependencies = [
 
 [[package]]
 name = "nestor-satellite"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a68da0547d70fcaddbd0647892312a905d4b69224de4a056afca7062519f6cf"
+checksum = "791990190435dbb110014ae51d30ac9e9cdf262d17ade8cb5e854abdc8f2147b"
 dependencies = [
  "async-trait",
+ "base64 0.22.1",
  "bytes",
  "chrono",
  "cpal",
