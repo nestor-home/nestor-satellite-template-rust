@@ -106,6 +106,10 @@ cargo test
 `.nestor-version`: it launches `my-satellite run --null-audio` once per scenario and checks
 pairing, refused codes, identify, acks, text, audio and reconnection. CI runs both on every pull request.
 
+Before each push, a hook checks the format of the pushed files and runs clippy (`lefthook.yml`).
+Install [lefthook](https://lefthook.dev) (`brew install lefthook` or `npm i -g lefthook`), then run
+`lefthook install` once in your clone.
+
 ## Release
 
 Pull request titles follow [Conventional Commits](https://www.conventionalcommits.org/)
