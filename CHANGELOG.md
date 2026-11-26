@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/nestor-home/nestor-satellite-template-rust/compare/v0.2.1...v0.2.2) (2026-11-26)
+
+
+### Bug Fixes
+
+* **deps:** url 2.5.9 for RUSTSEC-2026-0592 ([#33](https://github.com/nestor-home/nestor-satellite-template-rust/issues/33)) ([844fd87](https://github.com/nestor-home/nestor-satellite-template-rust/commit/844fd87e6435604482dc0a3650a0b63c1a5f6023))
+
 ## [0.2.1](https://github.com/nestor-home/nestor-satellite-template-rust/compare/v0.2.0...v0.2.1) (2026-11-17)
 
 
